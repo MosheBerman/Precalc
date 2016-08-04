@@ -154,6 +154,7 @@ TODO:
 - [ ] Implement parabolas
 - [ ] Implement transformation protocol in graph view
 - [ ] Investigate and implement calculus stuff, such as shading and representations of estimation methods. 
+- [ ] Consider changing the Equation protocol so that adopters don't have to manually assign the coordinates in their calculations... (Return something instead?)
 - [ ] Consider breaking out into a `.framework`
 - [ ] GraphView's scaling is pretty cool, but the view size needs some love.
 
