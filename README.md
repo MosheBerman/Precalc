@@ -18,10 +18,10 @@ Written during bus and subway commutes using Xcode 7.3.1 and Swift 2.2.
 TODO:
 ---
 
-- [] Implement more trig functions
-- [] Implement parabolas
-- [] Investigate and implement calculus stuff, such as shading and representations of estimation methods. 
-- [] Implement transformation functions
+- [ ] Implement more trig functions
+- [ ] Implement parabolas
+- [ ] Investigate and implement calculus stuff, such as shading and representations of estimation methods. 
+- [ ] Implement transformation functions
 
 License:
 ---
