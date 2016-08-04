@@ -45,6 +45,21 @@ Check it out:
 
 ![Multiple Equations on a Single Graph](./multiple.png)
 
+About the Graph View:
+---
+
+The initializer of the `GraphView` sets up how the graph should be drawn, mimicing how you might do it in real life:
+
+let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
+
+The "smaller x bound" is the negative x value on the left edge, and the "larger" one is the positive x value off to the right.
+
+Graphs are always square, and scale to fit inside the frame of the GraphView. (The frame is currently hard coded to some value I liked during testing. There's a TODO to make this customizable.)
+
+If you make the bounds farther apart from each other, the graph will have smaller boxes, more points, and take longer to draw. If you make the X values closer to each other, you get... bigger boxes, fewer points, and maybe a quicker draw. 
+
+The interval is how often along the X axis we want equations to calculate a Y value. Think of this as how many points we want to draw on each square on our graph paper.
+
 Implementing Your Own Equations:
 ---
 
