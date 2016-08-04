@@ -34,7 +34,7 @@ protocol Equation
  
  #  Modifying Equations
  
- If we want to do things like translate, rotate, or reflect an equation, 
+ If we want to do things like translate, rotate, or reflect an equation,
  we could implement those methods here. What might that look like? What about composing a function?
  
  Some equations, such as various trigonometric functions, already support some of these operations as part of their formulae. (Phase shift of a sine wave, for example.)
@@ -48,7 +48,7 @@ protocol ModifiableEquation
     func reflect(overXAxis: Bool, overYAxis: Bool)
     
     func translate(deltaX: CGFloat, deltaY: CGFloat)
-
+    
     func rotate(withAngle theta: CGFloat)
 }
 
@@ -67,7 +67,7 @@ protocol GraphableEquation : Equation
 
 /*:
  
- # The Graph 
+ # The Graph
  
  When we draw graphs on paper, we usually draw an x axis and a y axis. Then, we calculate and plot points using a given interval. The graph view works in a similar way. By defining our positive and negative x limits, we can easily draw a square graph that scales to fit the frame of the view, and fits the defined number of calculations in our range.
  
@@ -85,7 +85,7 @@ class GraphView : UIView
     private let graphLineColor = UIColor(red: 0.8, green: 0.9, blue: 1.0, alpha: 1.0)
     
     private lazy var scale : CGFloat = self.frame.width / (max(self.x1, self.x2) - min(self.x1, self.x2))
-
+    
     private var numberOfLines : Int {
         return Int(CGRectGetWidth(self.frame)) / Int(scale)
     }
@@ -263,7 +263,7 @@ class GraphView : UIView
         }
         
         CGContextStrokePath(context)
-
+        
     }
     
     // MARK: - Convert Coordinates to the CGContext
@@ -282,16 +282,16 @@ class GraphView : UIView
     // MARK: - Draw a Circle
     
     func drawCircle(inContext context: CGContext, atCoordinate coordinate: Coordinate)
-
+        
     {
         CGContextAddArc(context, coordinate.x, coordinate.y, 1.0, 0.0, CGFloat(M_PI) * 2.0, 0)
     }
 }
 
-/*: 
+/*:
  
  # Defining Some Equations
-
+ 
  Here are some sample implementations of equations.
  
  - Exponential Function: Takes an exponent and calculates a simple x = y^n, where n is user supplied.
@@ -299,20 +299,20 @@ class GraphView : UIView
  - Sine: Supports amplitude, phase shift, vertical shift, and period.
  - Cosine: Same as sine, but with the cosine function.
  
- Because I haven't worked out how to use Swift's `for x in x1...x2` with CGFloats, I use a where loop, 
- manually incrementing by our interval on each iteration. When the computation for an equation is finished, 
+ Because I haven't worked out how to use Swift's `for x in x1...x2` with CGFloats, I use a where loop,
+ manually incrementing by our interval on each iteration. When the computation for an equation is finished,
  I assign the collected values to the equation's `coordinates` property. The GraphView knows what to do with that.
  
  Also, the GraphView asks the Equations to compute as necessary, so you don't usually need to call this yourself.
  
  */
 
-//: Parabola
+//: Exponential
 
 class Exponential : GraphableEquation
 {
     var exponent : CGFloat = 0.0
-   
+    
     // MARK: - Initializers
     
     init(exponent: CGFloat)
@@ -487,22 +487,29 @@ class Cosine : GraphableEquation
  
  */
 
-let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
+func demo()
+{
+    let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
+    let sine = Sine()
+    let line = Line(slope: 1.0, offset: 4.0)
+    let exponential = Exponential(exponent: 2.0)
+    
+    //: You can add these yourself.
+    
+//    let shiftedSine = Sine(period: 1.0, amplitude: 3.0, phaseShift: 1.0, verticalShift: 0.0)
+//    shiftedSine.drawingColor = UIColor(red: 0.2, green: 0.2, blue: 0.7, alpha: 1.0)
+//    
+//    let cosine = Cosine()
+//    cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
+    
+    graph.addEquation(sine)
+    graph.addEquation(line)
+    graph.addEquation(exponential)
+    
 
-let parabola = Exponential(exponent: 2.0)
-let line = Line(slope: 1.0, offset: 3.0)
-let sine = Sine()
+    
+    XCPlaygroundPage.currentPage.liveView = graph
+}
 
-let shiftedSine = Sine(period: 1.0, amplitude: 3.0, phaseShift: 1.0, verticalShift: 0.0)
-shiftedSine.drawingColor = UIColor(red: 0.2, green: 0.2, blue: 0.7, alpha: 1.0)
+demo()
 
-let cosine = Cosine()
-cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
-
-graph.addEquation(parabola)
-graph.addEquation(line)
-graph.addEquation(sine)
-//graph.addEquation(shiftedSine)
-graph.addEquation(cosine)
-
-XCPlaygroundPage.currentPage.liveView = graph
