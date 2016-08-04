@@ -10,8 +10,6 @@ Basically, you define an equation, tell the graph what color to draw in, and Cor
 
 I've been meaning to make something like this during precalculus and then during calculus 1, so before I take calc 2, I'm finally making this thing.
 
-The playground is documented fairly well, so have a look.
-
 Technical:
 ---
 
@@ -30,7 +28,24 @@ Here's the output:
 
 ![A graph of a sine wave](./demosin.png)
 
-Adding Your Own Equations:
+You can add multiple equations to a single GraphView, like so:
+
+    let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
+    
+    let sine = Sine()
+    let line = Line(slope: 1.0, offset: 4.0)
+    let exponential = Exponential(exponent: 2.0)
+    
+    graph.addEquation(sine)
+    graph.addEquation(line)
+    graph.addEquation(exponential)
+    
+    
+Check it out:
+
+![Multiple Equations on a Single Graph](./multiple.png)
+
+Implementing Your Own Equations:
 ---
 
 To add your own equation, conform to the `Equation` protocol:
