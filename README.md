@@ -50,7 +50,7 @@ About the Graph View:
 
 The initializer of the `GraphView` sets up how the graph should be drawn, mimicing how you might do it in real life:
 
-let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
+    let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
 
 The "smaller x bound" is the negative x value on the left edge, and the "larger" one is the positive x value off to the right.
 
