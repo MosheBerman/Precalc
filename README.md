@@ -154,7 +154,7 @@ There's more information in the playground, so take a look! (If you're feeling a
 TODO:
 ---
 
-See [Issues](https://github.com/MosheBerman/Precalc/Issues).
+See [Issues](https://github.com/MosheBerman/Precalc/issues).
 
 License:
 ---
