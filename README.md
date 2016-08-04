@@ -1,6 +1,8 @@
 # Precalc
 This repo contains some code which can graph equations in a UIView.
 
+[![A quick demo](./demo.png)](./demo.png)
+
 Summary:
 ---
 
