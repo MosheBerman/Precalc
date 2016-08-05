@@ -24,10 +24,7 @@ typealias Coordinate = CGPoint
 
 protocol Equation
 {
-    var coordinates : [Coordinate] { get }
-    
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat)
-    
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
 }
 
 /*:
@@ -149,9 +146,11 @@ class GraphView : UIView
     
     func drawEquation(equation: GraphableEquation, withContext context: CGContext, inRect rect: CGRect)
     {
-        self.drawLines(betweenCoordinates: equation.coordinates, withContext: context, inRect: rect
+        let coordinates = equation.compute(withInterval: self.interval, between: x1, and: x2)
+        
+        self.drawLines(betweenCoordinates: coordinates, withContext: context, inRect: rect
             , usingColor: equation.drawingColor.CGColor)
-        self.drawPoints(atCoordinates: equation.coordinates, withContext: context, inRect: rect, usingColor: equation.drawingColor.CGColor)
+        self.drawPoints(atCoordinates: coordinates, withContext: context, inRect: rect, usingColor: equation.drawingColor.CGColor)
     }
     
     // MARK: - Fill With Background Color
@@ -322,10 +321,9 @@ class Exponential : GraphableEquation
     
     // MARK: - Graphable Equation
     
-    var coordinates: [Coordinate] = []
     var drawingColor: UIColor = UIColor.redColor()
     
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat)
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
     {
         var coordinates : [Coordinate] = []
         var x = x1
@@ -337,7 +335,7 @@ class Exponential : GraphableEquation
             x = x + interval
         }
         
-        self.coordinates = coordinates
+        return coordinates
     }
 }
 
@@ -358,10 +356,10 @@ class Line : GraphableEquation
     
     // MARK: = Graphable Equation
     
-    var coordinates: [Coordinate] = []
     var drawingColor: UIColor = UIColor.greenColor()
     
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) {
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
+    {
         var coordinates : [Coordinate] = []
         
         var x = x1
@@ -375,7 +373,7 @@ class Line : GraphableEquation
             x = x + interval
         }
         
-        self.coordinates = coordinates
+        return coordinates
     }
 }
 
@@ -405,11 +403,12 @@ class Sine : GraphableEquation
     
     // MARK: - GraphableEquation
     
-    var coordinates: [Coordinate] = []
     var drawingColor: UIColor = UIColor.blackColor()
     
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) {
-        
+    // MARK: - Equation
+    
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
+    {
         var coordinates : [Coordinate] = []
         
         var x = x1
@@ -425,7 +424,7 @@ class Sine : GraphableEquation
             x = x + interval
         }
         
-        self.coordinates = coordinates
+        return coordinates
     }
 }
 
@@ -438,7 +437,7 @@ class Cosine : GraphableEquation
     var phaseShift: CGFloat
     var verticalShift: CGFloat
     
-    // MARK: - Initializer
+    // MARK: - Initializers
     
     init(period: CGFloat, amplitude: CGFloat, phaseShift: CGFloat, verticalShift: CGFloat)
     {
@@ -455,10 +454,12 @@ class Cosine : GraphableEquation
     
     // MARK: - GraphableEquation
     
-    var coordinates: [Coordinate] = []
     var drawingColor: UIColor = UIColor.blackColor()
     
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) {
+    // MARK: - Equation
+    
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
+    {
         
         var coordinates : [Coordinate] = []
         
@@ -475,7 +476,7 @@ class Cosine : GraphableEquation
             x = x + interval
         }
         
-        self.coordinates = coordinates
+        return coordinates
     }
 }
 
@@ -492,21 +493,14 @@ func demo()
     let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
     let sine = Sine()
     let line = Line(slope: 1.0, offset: 4.0)
-    let exponential = Exponential(exponent: 2.0)
     
     //: You can add these yourself.
     
-//    let shiftedSine = Sine(period: 1.0, amplitude: 3.0, phaseShift: 1.0, verticalShift: 0.0)
-//    shiftedSine.drawingColor = UIColor(red: 0.2, green: 0.2, blue: 0.7, alpha: 1.0)
-//    
-//    let cosine = Cosine()
-//    cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
+    let cosine = Cosine()
+    cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
     
     graph.addEquation(sine)
     graph.addEquation(line)
-    graph.addEquation(exponential)
-    
-
     
     XCPlaygroundPage.currentPage.liveView = graph
 }
