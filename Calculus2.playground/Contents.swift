@@ -2,7 +2,7 @@
 
 import UIKit
 import CoreGraphics
-import XCPlayground
+import PlaygroundSupport
 
 /*:
  
@@ -84,7 +84,7 @@ class GraphView : UIView
     private lazy var scale : CGFloat = self.frame.width / (max(self.x1, self.x2) - min(self.x1, self.x2))
     
     private var numberOfLines : Int {
-        return Int(CGRectGetWidth(self.frame)) / Int(scale)
+        return Int(self.frame.width) / Int(scale)
     }
     
     // MARK: - Initializer
@@ -92,7 +92,7 @@ class GraphView : UIView
     convenience init(withSmallerXBound x1: CGFloat, largerXBound x2: CGFloat, andInterval interval: CGFloat)
     {
         // If this isn't square, weird things will happen. Sorry!
-        self.init(frame: CGRectMake(0, 0, 600.0, 600.0))
+        self.init(frame: CGRect(x: 0, y: 0, width: 600, height: 600))
         
         self.x1 = x1
         self.x2 = x2
@@ -125,7 +125,7 @@ class GraphView : UIView
     
     // MARK: - Drawing
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         guard let context = UIGraphicsGetCurrentContext() else
         {
@@ -138,7 +138,7 @@ class GraphView : UIView
         
         for equation in self.equations
         {
-            self.drawEquation(equation, withContext: context, inRect: rect)
+            self.drawEquation(equation: equation, withContext: context, inRect: rect)
         }
     }
     
@@ -149,16 +149,16 @@ class GraphView : UIView
         let coordinates = equation.compute(withInterval: self.interval, between: x1, and: x2)
         
         self.drawLines(betweenCoordinates: coordinates, withContext: context, inRect: rect
-            , usingColor: equation.drawingColor.CGColor)
-        self.drawPoints(atCoordinates: coordinates, withContext: context, inRect: rect, usingColor: equation.drawingColor.CGColor)
+            , usingColor: equation.drawingColor.cgColor)
+        self.drawPoints(atCoordinates: coordinates, withContext: context, inRect: rect, usingColor: equation.drawingColor.cgColor)
     }
     
     // MARK: - Fill With Background Color
     
     func fillBackground(withContext context: CGContext, andRect rect: CGRect)
     {
-        CGContextSetFillColorWithColor(context, self.graphBackgroundColor.CGColor)
-        CGContextFillRect(context, rect)
+        context.setFillColor(self.graphBackgroundColor.cgColor)
+        context.fill(rect)
     }
     
     // MARK: - Draw Grid
@@ -167,101 +167,101 @@ class GraphView : UIView
     {
         var y : CGFloat = 0.0
         
-        CGContextSetStrokeColorWithColor(context, self.graphLineColor.CGColor)
-        CGContextSetLineWidth(context, 0.5)
+        context.setStrokeColor(self.graphLineColor.cgColor)
+        context.setLineWidth(0.5)
         
         while y < self.frame.height
         {
-            if CGContextIsPathEmpty(context) == false
+            if context.isPathEmpty == false
             {
-                CGContextStrokePath(context)
+                context.strokePath()
                 
                 // Stroke Axis
-                if y == CGRectGetWidth(self.frame)/2.0
+                if y == self.frame.width/2.0
                 {
-                    CGContextSetLineWidth(context, 2.0)
+                    context.setLineWidth(2.0)
                 }
                 else
                 {
-                    CGContextSetLineWidth(context, 1.0)
+                    context.setLineWidth(1.0)
                 }
             }
             
-            CGContextMoveToPoint(context, 0, y)
-            CGContextAddLineToPoint(context, self.frame.height, y)
+            context.move(to: CGPoint(x: 0.0, y: y))
+            context.addLine(to: CGPoint(x: self.frame.height, y: y))
             
             y = y + self.scale
         }
         
-        CGContextStrokePath(context)
+        context.strokePath()
     }
     
     func drawVerticalLines(withContext context: CGContext)
     {
         var x : CGFloat = 0.0
         
-        CGContextSetStrokeColorWithColor(context, self.graphLineColor.CGColor)
-        CGContextSetLineWidth(context, 0.5)
+        context.setStrokeColor(self.graphLineColor.cgColor)
+        context.setLineWidth(0.5)
         
         while x < self.frame.height
         {
-            if CGContextIsPathEmpty(context) == false
+            if context.isPathEmpty == false
             {
-                CGContextStrokePath(context)
+                context.strokePath()
             }
             
             // Stroke Axis
-            if x == CGRectGetHeight(self.frame)/2.0
+            if x == self.frame.height/2.0
             {
-                CGContextSetLineWidth(context, 2.0)
+                context.setLineWidth(2.0)
             }
             else
             {
-                CGContextSetLineWidth(context, 1.0)
+                context.setLineWidth(1.0)
             }
             
-            CGContextMoveToPoint(context, x, 0)
-            CGContextAddLineToPoint(context, x, self.frame.width)
+            context.move(to: CGPoint(x: x, y: 0.0))
+            context.addLine(to: CGPoint(x: x, y: self.frame.width))
             
             x = x + self.scale
         }
         
-        CGContextStrokePath(context)
+        context.strokePath()
     }
     
     // MARK: - Draw the Graph
     
     func drawPoints(atCoordinates coordinates: [Coordinate], withContext context: CGContext, inRect rect: CGRect, usingColor color: CGColor)
     {
-        CGContextSetStrokeColorWithColor(context, color)
-        CGContextSetLineWidth(context, 2.0)
+        context.setStrokeColor(color)
+        context.setLineWidth(2.0)
         
         for coordinate in coordinates
         {
             let translated = self.translated(coordinate: coordinate, toRect: rect)
-            CGContextMoveToPoint(context, translated.x, translated.y)
+            context.move(to: translated)
             self.drawCircle(inContext: context, atCoordinate: translated)
         }
         
-        CGContextStrokePath(context)
+        context.strokePath()
     }
     
     func drawLines(betweenCoordinates coordinates: [Coordinate], withContext context: CGContext, inRect rect: CGRect, usingColor color: CGColor)
     {
-        CGContextSetStrokeColorWithColor(context, color)
-        CGContextSetLineWidth(context, 1.0)
+        context.setStrokeColor(color)
+        context.setLineWidth(1.0)
         
         let translated = self.translated(coordinate: coordinates[0], toRect: rect)
-        CGContextMoveToPoint(context, translated.x, translated.y)
+        context.move(to: translated)
         
         for coordinate in coordinates
         {
             let translated = self.translated(coordinate: coordinate, toRect: rect)
-            CGContextAddLineToPoint(context, translated.x, translated.y)
-            CGContextMoveToPoint(context, translated.x, translated.y)
+            context.addLine(to: translated)
+            context.move(to: translated)
         }
         
-        CGContextStrokePath(context)
+        context.strokePath()
         
     }
     
@@ -272,8 +272,8 @@ class GraphView : UIView
         var coordinate : Coordinate = coord
         let scale = self.scale
         
-        coordinate.x = (CGRectGetWidth(rect) / 2.0) + (coordinate.x * scale)
-        coordinate.y = (CGRectGetHeight(rect) / 2.0) + (-coordinate.y * scale)
+        coordinate.x = (rect.width / 2.0) + (coordinate.x * scale)
+        coordinate.y = (rect.height / 2.0) + (-coordinate.y * scale)
         
         return coordinate
     }
@@ -281,9 +281,8 @@ class GraphView : UIView
     // MARK: - Draw a Circle
     
     func drawCircle(inContext context: CGContext, atCoordinate coordinate: Coordinate)
-        
     {
-        CGContextAddArc(context, coordinate.x, coordinate.y, 1.0, 0.0, CGFloat(M_PI) * 2.0, 0)
+        context.addArc(center: coordinate, radius: 1.0, startAngle: 0.0, endAngle: CGFloat(M_PI) * 2.0, clockwise: false)
     }
 }
 
@@ -321,7 +320,7 @@ class Exponential : GraphableEquation
     
     // MARK: - Graphable Equation
     
-    var drawingColor: UIColor = UIColor.redColor()
+    var drawingColor: UIColor = UIColor.red
     
     func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
     {
@@ -356,7 +355,7 @@ class Line : GraphableEquation
     
     // MARK: = Graphable Equation
     
-    var drawingColor: UIColor = UIColor.greenColor()
+    var drawingColor: UIColor = UIColor.green
     
     func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
     {
@@ -403,7 +402,7 @@ class Sine : GraphableEquation
     
     // MARK: - GraphableEquation
     
-    var drawingColor: UIColor = UIColor.blackColor()
+    var drawingColor: UIColor = UIColor.black
     
     // MARK: - Equation
     
@@ -454,7 +453,7 @@ class Cosine : GraphableEquation
     
     // MARK: - GraphableEquation
     
-    var drawingColor: UIColor = UIColor.blackColor()
+    var drawingColor: UIColor = UIColor.black
     
     // MARK: - Equation
     
@@ -499,10 +498,10 @@ func demo()
     let cosine = Cosine()
     cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
     
-    graph.addEquation(sine)
-    graph.addEquation(line)
+    graph.addEquation(equation: sine)
+    graph.addEquation(equation: line)
     
-    XCPlaygroundPage.currentPage.liveView = graph
+    PlaygroundPage.current.liveView = graph
 }
 
 demo()
