@@ -132,17 +132,13 @@ class Sine : GraphableEquation
     {
         var coordinates : [Coordinate] = []
         
-        var x = x1
-        
-        while x <= x2
+        for x in stride(from: x1, through: x2, by: interval)
         {
             let y : CGFloat
             
             y = amplitude * sin((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
             
             coordinates.append(Coordinate(x: x, y: y))
-            
-            x = x + interval
         }
         
         return coordinates
@@ -189,6 +185,54 @@ class Cosine : GraphableEquation
             let y : CGFloat
             
             y = amplitude * cos((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
+            
+            coordinates.append(Coordinate(x: x, y: y))
+        }
+        
+        return coordinates
+    }
+}
+
+//: Tangent
+
+class Tangent : GraphableEquation
+{
+    var period: CGFloat
+    var amplitude: CGFloat
+    var phaseShift: CGFloat
+    var verticalShift: CGFloat
+    
+    // MARK: - Initializers
+    
+    init(period: CGFloat, amplitude: CGFloat, phaseShift: CGFloat, verticalShift: CGFloat)
+    {
+        self.period = period
+        self.amplitude = amplitude
+        self.phaseShift = phaseShift
+        self.verticalShift = verticalShift
+    }
+    
+    convenience init()
+    {
+        self.init(period: 1.0, amplitude: 1.0, phaseShift: 0.0, verticalShift: 0.0)
+    }
+    
+    // MARK: - GraphableEquation
+    
+    var drawingColor: UIColor = UIColor.black
+    
+    // MARK: - Equation
+    
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate]
+    {
+        
+        var coordinates : [Coordinate] = []
+        
+        for x in stride(from: x1, through: x2, by: interval)
+        {
+            let y : CGFloat
+            
+            y = amplitude * tan((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
             
             coordinates.append(Coordinate(x: x, y: y))
         }
