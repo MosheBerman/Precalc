@@ -184,17 +184,13 @@ class Cosine : GraphableEquation
         
         var coordinates : [Coordinate] = []
         
-        var x = x1
-        
-        while x <= x2
+        for x in stride(from: x1, through: x2, by: interval)
         {
             let y : CGFloat
             
             y = amplitude * cos((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
             
             coordinates.append(Coordinate(x: x, y: y))
-            
-            x = x + interval
         }
         
         return coordinates
