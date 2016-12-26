@@ -42,9 +42,9 @@ protocol Equation
 
 protocol ModifiableEquation
 {
-    func reflect(overXAxis: Bool, overYAxis: Bool)
+    func reflect(_ overXAxis: Bool, overYAxis: Bool)
     
-    func translate(deltaX: CGFloat, deltaY: CGFloat)
+    func translate(_ deltaX: CGFloat, deltaY: CGFloat)
     
     func rotate(withAngle theta: CGFloat)
 }
@@ -72,18 +72,18 @@ protocol GraphableEquation : Equation
 
 class GraphView : UIView
 {
-    private(set) var equations : [GraphableEquation] = []
+    fileprivate(set) var equations : [GraphableEquation] = []
     
     var x1: CGFloat = -15.0
     var x2: CGFloat = 15.0
     var interval : CGFloat = 1.0
     
-    private let graphBackgroundColor = UIColor(red: 0.95, green: 0.95, blue: 1.0, alpha: 1.0)
-    private let graphLineColor = UIColor(red: 0.8, green: 0.9, blue: 1.0, alpha: 1.0)
+    fileprivate let graphBackgroundColor = UIColor(red: 0.95, green: 0.95, blue: 1.0, alpha: 1.0)
+    fileprivate let graphLineColor = UIColor(red: 0.8, green: 0.9, blue: 1.0, alpha: 1.0)
     
-    private lazy var scale : CGFloat = self.frame.width / (max(self.x1, self.x2) - min(self.x1, self.x2))
+    fileprivate lazy var scale : CGFloat = self.frame.width / (max(self.x1, self.x2) - min(self.x1, self.x2))
     
-    private var numberOfLines : Int {
+    fileprivate var numberOfLines : Int {
         return Int(self.frame.width) / Int(scale)
     }
     
@@ -115,7 +115,7 @@ class GraphView : UIView
         self.setNeedsDisplay()
     }
     
-    func addEquation(equation: GraphableEquation)
+    func addEquation(_ equation: GraphableEquation)
     {
         equation.compute(withInterval: self.interval, between: self.x1, and: self.x2)
         
@@ -138,13 +138,13 @@ class GraphView : UIView
         
         for equation in self.equations
         {
-            self.drawEquation(equation: equation, withContext: context, inRect: rect)
+            self.drawEquation(equation, withContext: context, inRect: rect)
         }
     }
     
     // MARK: - Draw Equation
     
-    func drawEquation(equation: GraphableEquation, withContext context: CGContext, inRect rect: CGRect)
+    func drawEquation(_ equation: GraphableEquation, withContext context: CGContext, inRect rect: CGRect)
     {
         let coordinates = equation.compute(withInterval: self.interval, between: x1, and: x2)
         
@@ -479,6 +479,15 @@ class Cosine : GraphableEquation
     }
 }
 
+//: Sun Transit
+ 
+class SunTransit : GraphableEquation {
+    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) -> [Coordinate] {
+        
+    }
+}
+
+
 /*:
  
  #  Graphing Some Functions
@@ -498,8 +507,8 @@ func demo()
     let cosine = Cosine()
     cosine.drawingColor = UIColor(red: 0.2, green: 0.7, blue: 0.2, alpha: 1.0)
     
-    graph.addEquation(equation: sine)
-    graph.addEquation(equation: line)
+    graph.addEquation(sine)
+    graph.addEquation(line)
     
     PlaygroundPage.current.liveView = graph
 }
