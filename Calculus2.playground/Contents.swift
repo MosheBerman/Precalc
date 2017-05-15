@@ -26,6 +26,9 @@ protocol Equation
 {
     func compute(at x: CGFloat) -> CGFloat   
     var domain: Range<CGFloat>? { get set }
+
+    @available(*, obsoleted)
+    optional func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat)
 }
 
 /*:
@@ -78,6 +81,9 @@ class GraphView : UIView
     var x1: CGFloat = -15.0
     var x2: CGFloat = 15.0
     var interval : CGFloat = 1.0
+
+    // Should we call setNeedsDisplay automatically
+    var autoUpdatesAfterAddingEquation: Bool = true
     
     fileprivate let graphBackgroundColor = UIColor(red: 0.95, green: 0.95, blue: 1.0, alpha: 1.0)
     fileprivate let graphLineColor = UIColor(red: 0.8, green: 0.9, blue: 1.0, alpha: 1.0)
@@ -113,12 +119,20 @@ class GraphView : UIView
     func clear()
     {
         self.equations = []
-        self.setNeedsDisplay()
+        if autoUpdatesAfterAddingEquation 
+        {
+            self.setNeedsDisplay()
+        }
     }
     
     func addEquation(_ equation: GraphableEquation, between min: CGFloat?=nil, and max: CGFloat?=nil, inclusive:Bool = true)
     {
         self.equations.append(equation)
+
+        if autoUpdatesAfterAddingEquation 
+        {
+            self.setNeedsDisplay()
+        }
     }
     
     // MARK: - Drawing
@@ -154,8 +168,10 @@ class GraphView : UIView
         
         if let range = equation.domain
         {
+            // Don't draw dangling lines at the start of the graph.
             rangeContainsPreviousX = range.contains(previousX)
             
+            // If the equation provides a domain, respect it.    
             if !range.contains(x)
             {
                 return
@@ -163,7 +179,6 @@ class GraphView : UIView
         }
         
         let coordinate: Coordinate = Coordinate(x: x, y: equation.compute(at:x))
-        
         
         if previousX > self.x1, rangeContainsPreviousX
         {

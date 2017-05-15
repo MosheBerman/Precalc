@@ -42,6 +42,9 @@ let exponential = Exponential(exponent: 2.0)
 graph.addEquation(sine)
 graph.addEquation(line)
 graph.addEquation(exponential)
+
+// As of 1.1.0, you need to tell the graph view to render, by calling setNeedsDisplay()
+graph.setNeedsDisplay()
 ```    
     
 Check it out:
@@ -71,15 +74,16 @@ Implementing Your Own Equations:
 To add your own equation, conform to the `Equation` protocol:
 
 ```swift
-protocol Equation {
-    var coordinates : [Coordinate] { get }
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat)
+protocol Equation
+{
+    func compute(at x: CGFloat) -> CGFloat   
+    var domain: Range<CGFloat>? { get set }
 }
 ```
-    
-You must assign coordinates before exiting the `compute` method, or nothing will draw. Perhaps this should be handled internally to the graph view - I'm not sure yet. 
 
-(An alternate implementation would simplify this protocol and eliminate the coordinates property. In that case, GraphView would handle the caching internally.)
+---
+Note: Previous versions of this playground used a different version of the Equation protocol, which pre-cached coordinates. That approach made it difficult to batch equation computations together, and prevented function composition, so it was removed.
+---
     
 The graph view can draw your equation if you implement the compute function and also adopt `GraphableEquation`, which defines the color of your drawing on the graph.
 
@@ -94,7 +98,8 @@ Here's an example `GraphableEquation` implementation for the sine formula we use
 ```swift
 //: Sine
 
-class Sine : GraphableEquation {
+class Sine : GraphableEquation
+{
     var period: CGFloat
     var amplitude: CGFloat
     var phaseShift: CGFloat
@@ -102,41 +107,32 @@ class Sine : GraphableEquation {
     
     // MARK: - Initializer
     
-    init(period: CGFloat, amplitude: CGFloat, phaseShift: CGFloat, verticalShift: CGFloat) {
+    init(period: CGFloat, amplitude: CGFloat, phaseShift: CGFloat, verticalShift: CGFloat)
+    {
         self.period = period
         self.amplitude = amplitude
         self.phaseShift = phaseShift
         self.verticalShift = verticalShift
     }
     
-    convenience init() {
+    convenience init()
+    {
         self.init(period: 1.0, amplitude: 1.0, phaseShift: 0.0, verticalShift: 0.0)
     }
     
     // MARK: - GraphableEquation
     
-    var coordinates: [Coordinate] = []
-    var drawingColor: UIColor = UIColor.blackColor()
+    var drawingColor: UIColor = UIColor.black
+    var domain: Range<CGFloat>?
     
-    func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat) {
-        
-        var coordinates : [Coordinate] = []
-        
-        var x = x1
-        
-        while x <= x2 {
-            let y : CGFloat
-            
-            y = amplitude * sin((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
-            
-            coordinates.append(Coordinate(x: x, y: y))
-            
-            x = x + interval
-        }
-        
-        self.coordinates = coordinates
+    // MARK: - Equation
+    
+    func compute(at x: CGFloat) -> CGFloat
+    {
+        return amplitude * cos((self.period * x) - (self.phaseShift/self.period)) + self.verticalShift
     }
 }
+
 ```
 
 We just implement the formula for a sine wave, taking into account the possible transformations built into the equation.
