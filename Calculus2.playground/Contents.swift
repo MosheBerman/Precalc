@@ -25,7 +25,6 @@ typealias Coordinate = CGPoint
 protocol Equation
 {
     func compute(at x: CGFloat) -> CGFloat   
-    var domain: Range<CGFloat>? { get set }
 }
 
 /*:
@@ -61,6 +60,7 @@ protocol ModifiableEquation
 protocol GraphableEquation : Equation
 {
     var drawingColor : UIColor { get set }
+    var drawingDomain: Range<CGFloat>? { get set }
 }
 
 /*:
@@ -163,7 +163,7 @@ class GraphView : UIView
         let previousX = x - self.interval
         var rangeContainsPreviousX = true
         
-        if let range = equation.domain
+        if let range = equation.graphingDomain
         {
             // Don't draw dangling lines at the start of the graph.
             rangeContainsPreviousX = range.contains(previousX)
@@ -357,7 +357,7 @@ class Exponential : GraphableEquation
     // MARK: - Graphable Equation
     
     var drawingColor: UIColor = UIColor.red
-    var domain: Range<CGFloat>?
+    var drawingDomain: Range<CGFloat>?
     
     // MARK: - Equation
     
@@ -384,7 +384,7 @@ class Line : GraphableEquation
     // MARK: = Graphable Equation
     
     var drawingColor: UIColor = UIColor.green
-    var domain: Range<CGFloat>?
+    var drawingDomain: Range<CGFloat>?
     
     // MARK: - Equation
     
@@ -420,7 +420,7 @@ class Sine : GraphableEquation
     // MARK: - GraphableEquation
     
     var drawingColor: UIColor = UIColor.black
-    var domain: Range<CGFloat>?
+    var drawingDomain: Range<CGFloat>?
     
     // MARK: - Equation
     
@@ -457,7 +457,7 @@ class Cosine : GraphableEquation
     // MARK: - GraphableEquation
     
     var drawingColor: UIColor = UIColor.black
-    var domain: Range<CGFloat>?
+    var drawingDomain: Range<CGFloat>?
     
     // MARK: - Equation
     

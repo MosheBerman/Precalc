@@ -74,7 +74,6 @@ To add your own equation, conform to the `Equation` protocol:
 protocol Equation
 {
     func compute(at x: CGFloat) -> CGFloat   
-    var domain: Range<CGFloat>? { get set }
 }
 ```
 
@@ -88,6 +87,7 @@ The graph view can draw your equation if you implement the compute function and 
 ```swift
 protocol GraphableEquation : Equation {
     var drawingColor : UIColor { get set }
+    var drawingDomain: Range<CGFloat>? { get set }
 }
 ```
 
@@ -121,7 +121,7 @@ class Sine : GraphableEquation
     // MARK: - GraphableEquation
     
     var drawingColor: UIColor = UIColor.black
-    var domain: Range<CGFloat>?
+    var drawingDomain: Range<CGFloat>?
     
     // MARK: - Equation
     
