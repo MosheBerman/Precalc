@@ -26,9 +26,6 @@ protocol Equation
 {
     func compute(at x: CGFloat) -> CGFloat   
     var domain: Range<CGFloat>? { get set }
-
-    @available(*, obsoleted)
-    optional func compute(withInterval interval: CGFloat, between x1: CGFloat, and x2: CGFloat)
 }
 
 /*:
