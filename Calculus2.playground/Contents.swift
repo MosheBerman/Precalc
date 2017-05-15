@@ -478,20 +478,27 @@ class Cosine : GraphableEquation
 func demo()
 {
     let graph = GraphView(withSmallerXBound: -15.0, largerXBound: 15.0, andInterval: 0.5)
-    
-    let line = Line(slope: 0.5, offset: 0)
-//    let sine = Sine()
-    
-    graph.addEquation(line)
-    //    graph.addEquation(sine)
-    //: You can add these yourself.
+    /*
+     If you're graphing many things at once, use this 
+     to prevent constant re-computation and rendering
+     as you work.
+    */
+    graph.autoUpdatesAfterAddingEquation = false 
+
+    let line = Line(slope: 1.0, offset: 3.0)
+    let sine = Sine()
     
     let cosine = Cosine(period: 1.0, amplitude: 1.0, phaseShift: -1.0, verticalShift: 0.0)
-    cosine.drawingColor = UIColor(red: 1.0, green: 0.2, blue: 0.2, alpha: 1.0)
-    cosine.domain = Range(uncheckedBounds: (lower: 0.0, upper: 8.0))
-    
+    cosine.drawingColor = UIColor(red: 0.7, green: 0.2, blue: 0.2, alpha: 1.0)
+    cosine.domain = Range(uncheckedBounds: (lower: 0.0, upper: 10.0))
+
     graph.addEquation(cosine)
+    graph.addEquation(line)
     
+    //: You can add these yourself.
+    //    graph.addEquation(sine)
+    
+    // Necessary only if `autoUpdatesAfterAddingEquation` is `false`.
     graph.setNeedsDisplay()
     
     PlaygroundPage.current.liveView = graph
