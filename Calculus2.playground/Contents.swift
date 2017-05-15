@@ -163,7 +163,7 @@ class GraphView : UIView
         let previousX = x - self.interval
         var rangeContainsPreviousX = true
         
-        if let range = equation.graphingDomain
+        if let range = equation.drawingDomain
         {
             // Don't draw dangling lines at the start of the graph.
             rangeContainsPreviousX = range.contains(previousX)
@@ -485,18 +485,19 @@ func demo()
     */
     graph.autoUpdatesAfterAddingEquation = false 
 
+    let parabola = Exponential(exponent: 2)
     let line = Line(slope: 1.0, offset: 3.0)
     let sine = Sine()
-    
     let cosine = Cosine(period: 1.0, amplitude: 1.0, phaseShift: -1.0, verticalShift: 0.0)
     cosine.drawingColor = UIColor(red: 0.7, green: 0.2, blue: 0.2, alpha: 1.0)
-    cosine.domain = Range(uncheckedBounds: (lower: 0.0, upper: 10.0))
+    cosine.drawingDomain = Range(uncheckedBounds: (lower: 0.0, upper: 10.0))
 
+    graph.addEquation(parabola)
     graph.addEquation(cosine)
     graph.addEquation(line)
     
     //: You can add these yourself.
-    //    graph.addEquation(sine)
+    graph.addEquation(sine)
     
     // Necessary only if `autoUpdatesAfterAddingEquation` is `false`.
     graph.setNeedsDisplay()
