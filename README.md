@@ -42,9 +42,6 @@ let exponential = Exponential(exponent: 2.0)
 graph.addEquation(sine)
 graph.addEquation(line)
 graph.addEquation(exponential)
-
-// As of 1.1.0, you need to tell the graph view to render, by calling setNeedsDisplay()
-graph.setNeedsDisplay()
 ```    
     
 Check it out:
