@@ -80,6 +80,7 @@ protocol Equation
 
 ---
 Note: Previous versions of this playground used a different version of the Equation protocol, which pre-cached coordinates. That approach made it difficult to batch equation computations together, and prevented function composition, so it was removed.
+
 ---
     
 The graph view can draw your equation if you implement the compute function and also adopt `GraphableEquation`, which defines the color of your drawing on the graph.
