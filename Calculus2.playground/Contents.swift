@@ -2,6 +2,7 @@
 
 import UIKit
 import CoreGraphics
+import QuartzCore
 import PlaygroundSupport
 
 /*:
@@ -145,48 +146,45 @@ class GraphView : UIView
         self.drawHorizontalLines(withContext: context)
         self.drawVerticalLines(withContext: context)
         
-        for x in stride(from: x1, through: x2, by: interval)
+        for equation in self.equations
         {
-            for equation in self.equations
-            {
-                self.drawEquation(equation, withContext: context, inRect: rect, at:x)
-            }
+            let coordinates = self.coordinates(for: equation, from: self.x1, to: self.x2)
+            let path = self.bezierPath(in: rect, for: coordinates)
+            self.draw(path: path, in: rect, using: equation.drawingColor.cgColor)
         }
-        
-        
     }
     
-    // MARK: - Draw Equation
+    // MARK: - Calculating Bezier Paths
     
-    func drawEquation(_ equation: GraphableEquation, withContext context: CGContext, inRect rect: CGRect, at x: CGFloat)
+    func coordinates(for equation: Equation, from min: CGFloat, to max: CGFloat) -> [Coordinate]
     {
-        let previousX = x - self.interval
-        var rangeContainsPreviousX = true
+        var coordinates: [Coordinate] = []
         
-        if let range = equation.drawingDomain
+        for x in stride(from: x1, through: x2, by: interval)
         {
-            // Don't draw dangling lines at the start of the graph.
-            rangeContainsPreviousX = range.contains(previousX)
-            
-            // If the equation provides a domain, respect it.    
-            if !range.contains(x)
-            {
-                return
-            }
+            let y = equation.compute(at: x)
+            let coordinate = Coordinate(x: x, y: y)
+            coordinates.append(coordinate)
         }
         
-        let coordinate: Coordinate = Coordinate(x: x, y: equation.compute(at:x))
+        return coordinates
+    }
+    
+    func bezierPath(in rect: CGRect, for coordinates: [Coordinate]) -> UIBezierPath
+    {
+        let path = UIBezierPath()
         
-        if previousX > self.x1, rangeContainsPreviousX
+        let translated = self.translated(coordinate: coordinates[0], toRect: rect)
+        path.move(to: translated)
+        
+        for coordinate in coordinates
         {
-            let previousCoordinate = Coordinate(x: previousX, y: equation.compute(at:previousX))
-            
-            let coordinates = [previousCoordinate, coordinate]
-            
-            self.drawLines(betweenCoordinates: coordinates, withContext: context, inRect: rect, usingColor: equation.drawingColor.cgColor)
+            let translated = self.translated(coordinate: coordinate, toRect: rect)
+            path.addLine(to: translated)
+            path.move(to: translated)
         }
         
-        self.drawPoints(atCoordinates: [coordinate], withContext: context, inRect: rect, usingColor: equation.drawingColor.cgColor)
+        return path
     }
     
     // MARK: - Fill With Background Color
@@ -267,38 +265,23 @@ class GraphView : UIView
     
     // MARK: - Draw the Graph
     
-    func drawPoints(atCoordinates coordinates: [Coordinate], withContext context: CGContext, inRect rect: CGRect, usingColor color: CGColor)
+    func draw(path: UIBezierPath, in rect: CGRect, using color: CGColor)
     {
-        context.setStrokeColor(color)
-        context.setLineWidth(2.0)
+        let pathLayer = CAShapeLayer()
+        pathLayer.frame = rect
+        pathLayer.path = path.cgPath
+        pathLayer.strokeColor = color
+        pathLayer.fillColor = nil
+        pathLayer.lineWidth = 1.0
+        pathLayer.lineJoin = kCALineJoinRound
         
-        for coordinate in coordinates
-        {
-            let translated = self.translated(coordinate: coordinate, toRect: rect)
-            context.move(to: translated)
-            self.drawCircle(inContext: context, atCoordinate: translated)
-        }
+        self.layer.addSublayer(pathLayer)
         
-        context.strokePath()
-    }
-    
-    func drawLines(betweenCoordinates coordinates: [Coordinate], withContext context: CGContext, inRect rect: CGRect, usingColor color: CGColor)
-    {
-        context.setStrokeColor(color)
-        context.setLineWidth(1.0)
-        
-        let translated = self.translated(coordinate: coordinates[0], toRect: rect)
-        context.move(to: translated)
-        
-        for coordinate in coordinates
-        {
-            let translated = self.translated(coordinate: coordinate, toRect: rect)
-            context.addLine(to: translated)
-            context.move(to: translated)
-        }
-        
-        context.strokePath()
-        
+        let pathAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        pathAnimation.duration = 5.0
+        pathAnimation.fromValue = NSNumber(value:0.0)
+        pathAnimation.toValue = NSNumber(value:1.0)
+        pathLayer.add(pathAnimation, forKey: "strokeEnd")
     }
     
     // MARK: - Convert Coordinates to the CGContext
